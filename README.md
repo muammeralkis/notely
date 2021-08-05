@@ -1,4 +1,4 @@
-# SaleRent
+# notely
 Notely is a simple note edit/add/delete app.
 
 # Made With
