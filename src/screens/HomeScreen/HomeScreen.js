@@ -1,5 +1,5 @@
-import axios from 'axios';
 import React, {useEffect, useState} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -17,9 +17,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import NoteCard from './NoteCard';
 import colors from '../../utils/colors';
+import baseRequest from '../../_core/baseRequest';
 
 const HomeScreen = ({navigation}) => {
-  const baseUrl = 'http://localhost:3000/';
+  const isFocused = useIsFocused();
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -27,7 +28,7 @@ const HomeScreen = ({navigation}) => {
 
   const getNotes = async () => {
     try {
-      const data = await axios.get(baseUrl + 'notes');
+      const data = await baseRequest.get('notes');
       setNotes(data.data);
     } catch (e) {
       Alert.alert('Error', 'An error occurred', [{text: 'Ok'}]);
@@ -46,11 +47,17 @@ const HomeScreen = ({navigation}) => {
     }
   }, [refreshing]);
 
+  useEffect(() => {
+    if (isFocused) {
+      getNotes();
+    }
+  }, [isFocused]);
+
   const search = async event => {
     const text = event.nativeEvent.text;
 
     try {
-      const data = await axios.get(baseUrl + 'notes' + '?q=' + text);
+      const data = await baseRequest.get('notes' + '?q=' + text);
       setNotes(data.data);
     } catch (e) {
       Alert.alert('Error', 'An error occurred while searching', [{text: 'Ok'}]);

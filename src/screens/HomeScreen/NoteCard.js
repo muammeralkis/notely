@@ -1,11 +1,10 @@
-import axios from 'axios';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 
 import colors from '../../utils/colors';
+import baseRequest from '../../_core/baseRequest';
 
 const NoteCard = ({item, navigation, setRefreshing}) => {
-  const baseUrl = 'http://localhost:3000/';
   const {title, date, content, id} = item;
 
   const goDetail = () => {
@@ -23,7 +22,7 @@ const NoteCard = ({item, navigation, setRefreshing}) => {
   };
 
   const deleteItem = async () => {
-    await axios.delete(baseUrl + 'notes/' + id);
+    await baseRequest.delete('notes/' + id);
     setRefreshing(true);
   };
 
@@ -36,7 +35,9 @@ const NoteCard = ({item, navigation, setRefreshing}) => {
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.date}>{date}</Text>
       <View style={styles.seperator} />
-      <Text numberOfLines={4} style={styles.content}>{content}</Text>
+      <Text numberOfLines={4} style={styles.content}>
+        {content}
+      </Text>
     </TouchableOpacity>
   );
 };

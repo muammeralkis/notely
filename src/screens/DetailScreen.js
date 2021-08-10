@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,13 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import {useEffect} from 'react/cjs/react.development';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import colors from '../utils/colors';
-import axios from 'axios';
+import baseRequest from '../_core/baseRequest';
 
 const DetailScreen = ({route, navigation}) => {
-  const baseUrl = 'http://localhost:3000/';
 
   const [title, setTitle] = useState('New Note');
   const [date, setDate] = useState();
@@ -65,27 +63,22 @@ const DetailScreen = ({route, navigation}) => {
   }, [route]);
 
   const saveChanges = async () => {
-    try {
-      let result;
-      if (route.params) {
-        result = await axios.put(baseUrl + 'notes/' + id, {
-          title,
-          date: new Date().toLocaleString('tr-TR'),
-          content,
-          id: id,
-        });
-      } else {
-        result = await axios.post(baseUrl + 'notes', {
-          title,
-          date: new Date().toLocaleString('tr-TR'),
-          content,
-          id: id,
-        });
-      }
-      navigation.goBack();
-    } catch (e) {
-      Alert.alert('Error', e.message, [{text: 'Ok'}]);
+    if (route.params) {
+      await baseRequest.put('notes/' + id, {
+        title,
+        date: new Date().toLocaleString('tr-TR'),
+        content,
+        id: id,
+      });
+    } else {
+      await baseRequest.post('notes', {
+        title,
+        date: new Date().toLocaleString('tr-TR'),
+        content,
+        id: id,
+      });
     }
+    navigation.goBack();
   };
 
   const onChangeTitle = event => {
